@@ -1,0 +1,6 @@
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+server->browser: 201 Created
+
+note over browser: no redirect unlike in no-spa implementation of the page
+
+note over browser: spa.js executes code and updates, updates data in inner data structure and browser displays updated data

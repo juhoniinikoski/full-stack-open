@@ -1,7 +1,7 @@
 browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note
 server->browser: 302 Found
 
-note over browser: refreshing page
+note over browser: URL Redirect
 
 browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/notes
 server->browser: HTML-code
