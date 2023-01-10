@@ -16,6 +16,23 @@ const Country = ({country}) => {
   )
 }
 
+const Countries = ({filtered, setFilter}) => {
+
+  const handleShow = (name) => {
+    setFilter(name.toLowerCase())
+  }
+
+  return (
+    <div>
+    {filtered.length > 10 ?
+      <div>Too many matches, specify another filter</div>
+      : filtered.length === 1 ? <Country country={filtered[0]} />
+      : filtered.map(c => <div key={c.name.common}>{c.name.common} <button onClick={() => handleShow(c.name.common)}>show</button></div>)}
+      {filtered.length === 0 && <div>No matches</div>}
+    </div>
+  )
+}
+
 const App = () => {
   const [countries, setCountries] = useState([]);
   const [filter, setFilter] = useState('');
@@ -37,11 +54,7 @@ const App = () => {
   return (
     <div>
       find countries <input value={filter} onChange={(e) => setFilter(e.target.value)} />
-      {filtered.length > 10 ?
-      <div>Too many matches, specify another filter</div>
-      : filtered.length === 1 ? <Country country={filtered[0]} />
-      : filtered.map(c => <div key={c.name.common}>{c.name.common}</div>)}
-      {filtered.length === 0 && <div>No matches</div>}
+      <Countries filtered={filtered} setFilter={setFilter}/>
     </div>
   )
 }
