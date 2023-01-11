@@ -2,6 +2,22 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 
 const Country = ({country}) => {
+
+  const [weather, setWeather] = useState()
+  const [unit, setUnit] = useState()
+
+  const lat = country.latlng[0]
+  const lng = country.latlng[1]
+
+  useEffect(() => {
+    axios
+    .get(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&daily=temperature_2m_max&timezone=GB`)
+    .then(res => {
+      setWeather(res.data.daily.temperature_2m_max[0])
+      setUnit(res.data.daily_units.temperature_2m_max)
+    })
+  }, [lat, lng])
+
   const languages = Object.values(country.languages);
 
   return (
@@ -10,8 +26,10 @@ const Country = ({country}) => {
       <div>capital {country.capital[0]}</div>
       <div>area {country.area}</div>
       <h4>languages</h4>
-      {languages.map(l => <li>{l}</li>)}
+      {languages.map(l => <li key={l}>{l}</li>)}
       <img alt='flag' src={country.flags.png}></img>
+      <h3>Weather in {country.capital[0]}</h3>
+      <p>Temperature {weather} {unit}</p>
     </div>
   )
 }
