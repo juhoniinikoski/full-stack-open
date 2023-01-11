@@ -1,6 +1,26 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
 
+const Notification = ({ message, type }) => {
+  if (message === null) {
+    return null
+  }
+
+  if (type === 'error') {
+    return (
+      <div style={{padding: 16, backgroundColor: 'red'}}>
+        {message}
+      </div>
+    )
+  }
+
+  return (
+    <div style={{padding: 16, backgroundColor: 'green'}}>
+      {message}
+    </div>
+  )
+}
+
 const Filter = ({filter, setFilter}) => <div>filter shown with <input value={filter} onChange={(e) => setFilter(e.target.value)} /></div>
 
 const Persons = ({persons, filter, deletePerson}) => {
@@ -30,6 +50,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [alertMessage, setAlertMessage] = useState({message: null, type: 'error'})
 
   useEffect(() => {
     personService
@@ -51,6 +72,13 @@ const App = () => {
         setPersons([...persons, res.data])
         setNewName('')
         setNewNumber('')
+        setAlertMessage({
+          message: `${newName} added to phonebook succesfully`,
+          type: 'success'
+        })
+        setTimeout(() => {
+          setAlertMessage({message: null, type: 'error'})
+        }, 3000)
       })
   }
 
@@ -71,6 +99,13 @@ const App = () => {
         setPersons(newData)
         setNewName('')
         setNewNumber('')
+        setAlertMessage({
+          message: `${newName} updated succesfully`,
+          type: 'success'
+        })
+        setTimeout(() => {
+          setAlertMessage({message: null, type: 'error'})
+        }, 3000)
       })
   }
 
@@ -81,6 +116,23 @@ const App = () => {
         .delete(id)
         .then(() => {
           setPersons(persons.filter(p => p.id !== id))
+          setAlertMessage({
+            message: `${name} deleted succesfully`,
+            type: 'success'
+          })
+          setTimeout(() => {
+            setAlertMessage({message: null, type: 'error'})
+          }, 3000)
+        })
+        .catch(() => {
+          setPersons(persons.filter(p => p.id !== id))
+          setAlertMessage({
+            message: `${name} was already deleted`,
+            type: 'error'
+          })
+          setTimeout(() => {
+            setAlertMessage({message: null, type: 'error'})
+          }, 3000)
         })
       }
   }
@@ -93,7 +145,13 @@ const App = () => {
           updatePerson()
         }
       } else {
-        alert(`${newName} is already added to numberbook`)
+        setAlertMessage({
+          message: `${newName} is already added to phonebook`,
+          type: 'error'
+        })
+        setTimeout(() => {
+          setAlertMessage({message: null, type: 'error'})
+        }, 3000)
         setNewName('')
         setNewNumber('')
       }
@@ -105,6 +163,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification message={alertMessage.message} type={alertMessage.type}/>
       <h2>numberbook</h2>
       <Filter filter={filter} setFilter={setFilter}/>
       <h2>Add a new</h2>
