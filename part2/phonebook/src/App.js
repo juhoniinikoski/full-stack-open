@@ -69,9 +69,14 @@ const App = () => {
     personService
       .create(personObject)
       .then(res => {
-        setPersons([...persons, res.data])
+        setPersons([...persons, personObject])
         setNewName('')
         setNewNumber('')
+        personService
+          .getAll()
+          .then((res) => {
+            setPersons(res.data)
+          })
         setAlertMessage({
           message: `${newName} added to phonebook succesfully`,
           type: 'success'
@@ -95,7 +100,7 @@ const App = () => {
       .update(id, personObject)
       .then(res => {
         const newData = [...persons]
-        newData[index] = res.data
+        newData[index].number = personObject.number
         setPersons(newData)
         setNewName('')
         setNewNumber('')
