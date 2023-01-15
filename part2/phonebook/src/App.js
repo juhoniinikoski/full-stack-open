@@ -85,6 +85,12 @@ const App = () => {
           setAlertMessage({message: null, type: 'error'})
         }, 3000)
       })
+      .catch((e) => {
+        setAlertMessage({
+          message: e.response.data.error,
+          type: 'error'
+        })
+      })
   }
 
   const updatePerson = () => {
@@ -111,6 +117,12 @@ const App = () => {
         setTimeout(() => {
           setAlertMessage({message: null, type: 'error'})
         }, 3000)
+      })
+      .catch((e) => {
+        setAlertMessage({
+          message: e.response.data.error,
+          type: 'error'
+        })
       })
   }
 
