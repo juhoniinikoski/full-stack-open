@@ -1,6 +1,8 @@
+require("dotenv").config();
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const Person = require('./db/models/person')
 
 const app = express()
 
@@ -39,79 +41,89 @@ app.get('/', (req, res) => {
 })
 
 app.get('/api/persons', (req, res) => {
-  res.json(persons)
+  Person.find({}).then(persons => res.json(persons))
 })
 
-app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const person = persons.find(p => p.id === id);
-  if (person) {
-    res.json(person)
-  } else {
-    res.status(404).end()
-  }
+app.get('/api/seed', (req, res) => {
+  Person.deleteMany({}).then(() =>
+    persons.forEach(p => {
+      const newPerson = new Person({
+        number: p.number,
+        name: p.name
+      })
+
+      newPerson.save();
+    })
+  );
+
+  res.send('Database seeded succesfully')
 })
 
-app.post('/api/persons', (req, res) => {
-  const id = Math.floor(Math.random() * 5000)
+app.get('/api/persons/:id', (req, res, next) => {
+  Person.findById(req.params.id)
+    .then((person) => res.json(person))
+    .catch(e => next(e))
+})
+
+app.post('/api/persons', (req, res, next) => {
   const { name, number } = req.body
-  if (!name || !number) {
-    res.status(404).send({error: 'name or number is missing'})
-  } else if (persons.filter(p => p.name === name).length > 0) {
-    res.status(404).send({error: 'given name is already added to phonebook'})
-  } else {
-    const newPerson = {
-      name: req.body.name,
-      number: String(req.body.number),
-      id: id
-    }
-  
-    persons = [...persons, newPerson]
-    res.status(201).end()
-  }
+
+  const newPerson = new Person({
+    name: name,
+    number: number,
+  })
+
+  newPerson.save()
+    .then(() => res.status(201)
+    .end()).catch(e => next(e))
   
 })
 
-app.put('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
+app.put('/api/persons/:id', (req, res, next) => {
   const { name, number } = req.body
-  if (!name || !number) {
-    res.status(404).send({error: 'name or number is missing'})
-  } else {
-    const newPerson = {
-      name: name,
-      number: String(number),
-      id: id
-    }
 
-    const index = persons.indexOf(p => p.id === id);
-  
-    persons[index] = newPerson
-    res.status(200).end()
-  }
+  Person.findByIdAndUpdate(req.params.id, { name: name, number: number})
+    .then(() => res.status(200).end())
+    .catch(e => next(e))
   
 })
 
-app.delete('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const person = persons.find(p => p.id === id)
-  if (person) {
-    res.status(204).end()
-    persons = persons.filter(p => p.id !== id)
-  } else {
-    res.status(404).end()
-  }
+app.delete('/api/persons/:id', (req, res, next) => {
+  Person.findByIdAndRemove(req.params.id)
+    .then(() => {
+      res.status(204).end()
+    })
+    .catch(e => next(e))
 })
 
 app.get('/info', (req, res) => {
   const date = new Date()
-  res.send(`
-    <div>
-      <p>Phonebook has info for ${persons.length} people<p>
-      <p>${date}<p>
-    </div>
-  `)
+  Person.find({}).then(persons => {
+    res.send(`
+      <div>
+        <p>Phonebook has info for ${persons.length} people<p>
+        <p>${date}<p>
+      </div>
+    `)
+  });
 })
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  if (error.name === "ValidationError") {
+    return response.status(400).json({
+      error: error.message
+  })}
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
