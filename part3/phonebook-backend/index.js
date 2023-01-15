@@ -37,15 +37,15 @@ let persons = [
   }
 ]
 
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.send('Hello server!')
 })
 
-app.get('/api/persons', (req, res) => {
+app.get('/api/persons', (_req, res) => {
   Person.find({}).then(persons => res.json(persons))
 })
 
-app.get('/api/seed', (req, res) => {
+app.get('/api/seed', (_req, res) => {
   Person.deleteMany({}).then(() =>
     persons.forEach(p => {
       const newPerson = new Person({
@@ -97,7 +97,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
     .catch(e => next(e))
 })
 
-app.get('/info', (req, res) => {
+app.get('/info', (_req, res) => {
   const date = new Date()
   Person.find({}).then(persons => {
     res.send(`
@@ -109,7 +109,7 @@ app.get('/info', (req, res) => {
   })
 })
 
-const errorHandler = (error, request, response, next) => {
+const errorHandler = (error, _request, response, next) => {
   console.error(error.message)
 
   if (error.name === 'CastError') {
