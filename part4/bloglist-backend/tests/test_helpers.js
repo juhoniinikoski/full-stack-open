@@ -1,3 +1,6 @@
+const Blog = require('../models/blog')
+
+const blogsInDb = async () => await Blog.find({})
 
 const blog = [
   {
@@ -62,5 +65,5 @@ const blogs = [
 ]
 
 module.exports = {
-  blog, blogs
+  blog, blogs, blogsInDb
 }

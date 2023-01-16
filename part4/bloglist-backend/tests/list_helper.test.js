@@ -86,7 +86,7 @@ describe('most likes', () => {
 
   it('of multiple equally many likes', () => {
     const newList = [...testHelpers.blogs]
-    newList[0] = {...newList[0], likes: 17}
+    newList[0] = { ...newList[0], likes: 17 }
     const result = listHelper.mostLikes(newList)
     expect(result).toEqual({ author: 'Michael Chan', likes: 17 })
   })

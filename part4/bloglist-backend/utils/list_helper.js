@@ -32,7 +32,7 @@ const mostLikes = (blogs) => {
   const grouped = lodash(authors).groupBy(a => a.author)
     .map((value, key) => ({ author: key, likes: value.map(v => v.likes).reduce((a, b) => a + b, 0) }))
     .value()
-  
+
   const likes = grouped.map(g => g.likes)
   const maxIdx = likes.indexOf(Math.max(...likes))
   return grouped[maxIdx]
