@@ -1,40 +1,35 @@
 module.exports = {
-  'env': {
-    'node': true,
-    'commonjs': true,
-    'es2021': true
+  env: {
+    node: true,
+    commonjs: true,
+    es2021: true,
+    jest: true,
   },
-  'extends': 'eslint:recommended',
-  'overrides': [
-  ],
-  'parserOptions': {
-    'ecmaVersion': 'latest'
+  extends: ['eslint:recommended', 'prettier'],
+  plugins: ['prettier'],
+  overrides: [],
+  parserOptions: {
+    ecmaVersion: 'latest',
   },
-  'rules': {
-    'indent': [
+  rules: {
+    indent: ['error', 2],
+    'prettier/prettier': [
       'error',
-      2
+      {
+        semi: true,
+        trailingComma: 'all',
+        singleQuote: true,
+        printWidth: 120,
+        tabWidth: 2,
+        endOfLine: 'auto',
+      },
     ],
-    'linebreak-style': [
-      'error',
-      'unix'
-    ],
-    'quotes': [
-      'error',
-      'single'
-    ],
-    'semi': [
-      'error',
-      'never'
-    ],
-    'eqeqeq': 'error',
+    'linebreak-style': ['error', 'unix'],
+    quotes: ['error', 'single'],
+    eqeqeq: 'error',
     'no-trailing-spaces': 'error',
-    'object-curly-spacing': [
-      'error', 'always'
-    ],
-    'arrow-spacing': [
-      'error', { 'before': true, 'after': true }
-    ],
-    'no-console': 0
-  }
-}
+    'object-curly-spacing': ['error', 'always'],
+    'arrow-spacing': ['error', { before: true, after: true }],
+    'no-console': 0,
+  },
+};
