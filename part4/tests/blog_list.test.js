@@ -3,11 +3,19 @@ const supertest = require('supertest')
 const testHelpers = require('./test_helpers')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const api = supertest(app)
 
+const loginData = {
+  username: "hellas",
+  password: "password"
+}
+
 beforeEach(async () => {
   await Blog.deleteMany({})
+  await User.deleteMany({})
+  await User.insertMany(testHelpers.users)
   await Blog.insertMany(testHelpers.blogs)
 })
 
@@ -37,8 +45,17 @@ describe('adding a post', () => {
       likes: 2,
       url: 'testurl.com'
     }
+
+    const response =
+      await api
+        .post('/api/login')
+        .send(loginData)
+
+    const token = response.body.token
+
     await api
       .post('/api/blogs').send(newBlog)
+      .auth(token, { type: 'bearer' })
       .expect(201)
       .expect('content-Type', /application\/json/)
 
@@ -55,8 +72,17 @@ describe('adding a post', () => {
       author: 'Test user',
       url: 'testurl.com'
     }
+
+    const response =
+      await api
+        .post('/api/login')
+        .send(loginData)
+
+    const token = response.body.token
+
     await api
       .post('/api/blogs').send(newBlog)
+      .auth(token, { type: 'bearer' })
       .expect(201)
       .expect('content-Type', /application\/json/)
 
@@ -78,12 +104,21 @@ describe('adding a post', () => {
       author: 'Test user',
     }
 
+    const response =
+      await api
+        .post('/api/login')
+        .send(loginData)
+
+    const token = response.body.token
+
     await api
       .post('/api/blogs').send(newBlog)
+      .auth(token, { type: 'bearer' })
       .expect(400)
 
     await api
       .post('/api/blogs').send(newBlog2)
+      .auth(token, { type: 'bearer' })
       .expect(400)
 
     const resultBlogs = await api.get('/api/blogs')
@@ -112,8 +147,16 @@ describe('deletion of blog post', () => {
     const initialBlogs = await testHelpers.blogsInDb()
     const blogToDelete = initialBlogs[0]
 
+    const response =
+      await api
+        .post('/api/login')
+        .send(loginData)
+
+    const token = response.body.token
+
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
+      .auth(token, { type: 'bearer' })
       .expect(204)
 
     const resultBlogs = await testHelpers.blogsInDb()
@@ -130,9 +173,40 @@ describe('deletion of blog post', () => {
   it('throws 400 if blog with given id doesnt exist', async () => {
     const initialBlogs = await testHelpers.blogsInDb()
 
+    const response =
+      await api
+        .post('/api/login')
+        .send(loginData)
+
+    const token = response.body.token
+
     await api
       .delete('/api/blogs/123456')
+      .auth(token, { type: 'bearer' })
       .expect(400)
+
+    const resultBlogs = await testHelpers.blogsInDb()
+
+    expect(resultBlogs).toHaveLength(
+      initialBlogs.length
+    )
+  })
+
+  it('throws an error if user is not authorized to delete a blog', async () => {
+    const initialBlogs = await testHelpers.blogsInDb()
+    const blogToDelete = initialBlogs[1]
+
+    const response =
+      await api
+        .post('/api/login')
+        .send(loginData)
+
+    const token = response.body.token
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .auth(token, { type: 'bearer' })
+      .expect(401)
 
     const resultBlogs = await testHelpers.blogsInDb()
 

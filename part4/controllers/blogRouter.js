@@ -1,8 +1,10 @@
 const Blog = require('../models/blog')
 const User = require('../models/user')
 const blogRouter = require('express').Router()
+const jwt = require('jsonwebtoken')
+const config = require('../utils/config')
 
-blogRouter.get('/', async (_req, res) => {
+blogRouter.get('/', async (req, res) => {
   const blogs = await Blog.find({}).populate('user', { name: 1, username: 1 }) // don't want to show all blogs here
   res.json(blogs)
 })
@@ -15,9 +17,9 @@ blogRouter.get('/:id', async (req, res) => {
 blogRouter.post('/', async (req, res) => {
   const body = req.body
 
-  const users = await User.find({})
+  const reqUser = req.user
+  const user = await User.findById(reqUser.id)
 
-  const user = users[0]
   const blog = new Blog({
     title: body.title,
     author: body.author,
@@ -41,8 +43,21 @@ blogRouter.put('/:id', async (req, res) => {
 })
 
 blogRouter.delete('/:id', async (req, res) => {
-  await Blog.findByIdAndRemove(req.params.id)
-  res.status(204).end()
+
+  const decodedToken = jwt.verify(req.token, config.SECRET)
+  if (!decodedToken || !decodedToken.id) {
+    return response.status(401).json({ error: 'token missing or invalid' })
+  }
+
+  const user = await User.findById(decodedToken.id)
+  const blog = await Blog.findById(req.params.id)
+
+  if (user.id.toString() === blog.user.toString()) {
+    await Blog.findByIdAndRemove(req.params.id)
+    res.status(204).end()
+  } else {
+    res.status(401).end()
+  }
 })
 
 module.exports = blogRouter

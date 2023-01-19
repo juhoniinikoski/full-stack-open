@@ -1,5 +1,6 @@
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const mongodb = require('mongodb')
 
 const blogsInDb = async () => await Blog.find({})
 const usersInDb = async () => await User.find({})
@@ -22,6 +23,7 @@ const blogs = [
     author: 'Michael Chan',
     url: 'https://reactpatterns.com/',
     likes: 7,
+    user: new mongodb.ObjectId("63c9019f756a847e6f414e60"),
     __v: 0
   },
   {
@@ -30,6 +32,7 @@ const blogs = [
     author: 'Edsger W. Dijkstra',
     url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
     likes: 5,
+    user: new mongodb.ObjectId("63c9019f756a847e6f414e61"),
     __v: 0
   },
   {
@@ -70,12 +73,14 @@ const users = [
   {
     username: 'hellas',
     name: "Arto Hellas",
-    passwordHash: 'password'
+    passwordHash: '$2b$10$ARKTKsu66hjd7m5LOfkPveYZSRlrJPgzuc0DTYA32CXvnSVyW5BPG',
+    _id: new mongodb.ObjectId("63c9019f756a847e6f414e60")
   },
   {
     username: 'mluukkai',
     name: "Matti Luukkainen",
-    passwordHash: 'password'
+    passwordHash: '$2b$10$ARKTKsu66hjd7m5LOfkPveYZSRlrJPgzuc0DTYA32CXvnSVyW5BPG',
+    _id: new mongodb.ObjectId("63c9019f756a847e6f414e61"),
   }
 ]
 

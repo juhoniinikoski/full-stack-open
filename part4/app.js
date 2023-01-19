@@ -8,6 +8,7 @@ const logger = require('./utils/logger')
 const middleware = require('./utils/middleware')
 const blogRouter = require('./controllers/blogRouter')
 const userRouter = require('./controllers/userRouter')
+const loginRouter = require('./controllers/login')
 const Blog = require('./models/blog')
 const User = require('./models/user')
 
@@ -26,8 +27,11 @@ app.use(cors())
 app.use(express.static('build'))
 app.use(express.json())
 
-app.use('/api/blogs', blogRouter)
+app.use(middleware.tokenExtractor)
+
+app.use('/api/blogs', middleware.userExtractor, blogRouter)
 app.use('/api/users', userRouter)
+app.use('/api/login', loginRouter)
 
 // for testing purposes
 app.get('/api/reset', async (_req, res) => {
