@@ -7,6 +7,9 @@ const mongoose = require('mongoose')
 const logger = require('./utils/logger')
 const middleware = require('./utils/middleware')
 const blogRouter = require('./controllers/blogRouter')
+const userRouter = require('./controllers/userRouter')
+const Blog = require('./models/blog')
+const User = require('./models/user')
 
 logger.info('Connecting to', config.MONGODB_URI)
 
@@ -24,6 +27,15 @@ app.use(express.static('build'))
 app.use(express.json())
 
 app.use('/api/blogs', blogRouter)
+app.use('/api/users', userRouter)
+
+// for testing purposes
+app.get('/api/reset', async (_req, res) => {
+  await Blog.deleteMany({});
+  await User.deleteMany({});
+
+  res.json('Initialized DB')
+})
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
