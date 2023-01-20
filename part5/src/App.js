@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
-import { setToken, getAll } from './services/blogs'
+import { setToken, getAll, create } from './services/blogs'
 import { login } from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
+  const [message, setMessage] = useState('')
   const [user, setUser] = useState(null)
 
   const handleLogin = async (event) => {
@@ -25,10 +28,10 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('wrong credentials')
+      setMessage('wrong credentials')
       setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+        setMessage(null)
+      }, 2000)
     }
   }
 
@@ -38,15 +41,42 @@ const App = () => {
     window.localStorage.removeItem('loggedUser')
   }
 
+  const handleCreate = async event => {
+    event.preventDefault()
+
+    try {
+      const newBlog = {
+        title: title,
+        author: author,
+        url: url
+      }
+
+      const response = await create(newBlog)
+      setBlogs([...blogs, response])
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+      setMessage(`a new blog ${response.title} by ${response.author} added`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 2000)
+    } catch (exception) {
+      setMessage(exception.response.data.error)
+      setTimeout(() => {
+        setMessage(null)
+      }, 2000)
+    }
+  }
+
   useEffect(() => {
     getAll().then(blogs =>
       setBlogs( blogs )
     )
 
     const storageUser = window.localStorage.getItem('loggedUser')
-    console.log(JSON.parse(storageUser))
     if (storageUser) {
       setUser(JSON.parse(storageUser))
+      setToken(JSON.parse(storageUser).token)
     }
 
   }, [])
@@ -82,8 +112,40 @@ const App = () => {
 
   return (
     <div>
+      {message && <p>{message}</p>}
       <h2>blogs</h2>
       <p>{user.name} logged in <button onClick={handleLogout} type='button'>log out</button></p>
+      <h2>create new</h2>
+      <form onSubmit={handleCreate}>
+        <div>
+          title
+            <input
+            type="text"
+            value={title}
+            name="Title"
+            onChange={({ target }) => setTitle(target.value)}
+          />
+        </div>
+        <div>
+          author
+            <input
+            type="text"
+            value={author}
+            name="Author"
+            onChange={({ target }) => setAuthor(target.value)}
+          />
+        </div>
+        <div>
+          url
+            <input
+            type="text"
+            value={url}
+            name="Url"
+            onChange={({ target }) => setUrl(target.value)}
+          />
+        </div>
+        <button type="submit">create</button>
+      </form>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}

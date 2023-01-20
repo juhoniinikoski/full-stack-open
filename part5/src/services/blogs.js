@@ -11,3 +11,17 @@ export const getAll = async () => {
   const result = await axios.get(baseUrl)
   return result.data
 }
+
+export const create = async newObject => {
+  const config = {
+    headers: { Authorization: token },
+  }
+
+  const response = await axios.post(baseUrl, newObject, config)
+  return response.data
+}
+
+export const update = async (id, newObject) => {
+  const request = await axios.put(`${ baseUrl } /${id}`, newObject)
+  return request.data
+}
