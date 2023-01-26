@@ -31,7 +31,7 @@ describe('fetching bloglist', () => {
 
   it('has transformed _ids to ids', async () => {
     const response = await api.get('/api/blogs');
-    response.body.forEach((blog) => expect(blog.id).toBeDefined());
+    response.body.forEach(blog => expect(blog.id).toBeDefined());
   });
 });
 
@@ -92,9 +92,17 @@ describe('adding a post', () => {
       author: 'Test user',
     };
 
-    await api.post('/api/blogs').send(newBlog).auth(token, { type: 'bearer' }).expect(400);
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .auth(token, { type: 'bearer' })
+      .expect(400);
 
-    await api.post('/api/blogs').send(newBlog2).auth(token, { type: 'bearer' }).expect(400);
+    await api
+      .post('/api/blogs')
+      .send(newBlog2)
+      .auth(token, { type: 'bearer' })
+      .expect(400);
 
     const resultBlogs = await api.get('/api/blogs');
     expect(initialBlogs.body.length).toEqual(resultBlogs.body.length);
@@ -103,13 +111,17 @@ describe('adding a post', () => {
 
 describe('updating blogs', () => {
   it('updates number of likes of the blog', async () => {
-    const initialBlog = (await testHelpers.blogsInDb())[0];
+    let initialBlog = (await testHelpers.blogsInDb())[0];
+    initialBlog.likes = 12;
 
-    await api.put(`/api/blogs/${initialBlog.id}`).auth(token, { type: 'bearer' }).send({ likes: 12 }).expect(200);
+    await api
+      .put(`/api/blogs/${initialBlog.id}`)
+      .auth(token, { type: 'bearer' })
+      .send({ blog: initialBlog })
+      .expect(200);
 
     const resultBlog = (await testHelpers.blogsInDb())[0];
 
-    expect(initialBlog.likes).not.toEqual(resultBlog.likes);
     expect(resultBlog.likes).toEqual(12);
   });
 });
@@ -119,13 +131,16 @@ describe('deletion of blog post', () => {
     const initialBlogs = await testHelpers.blogsInDb();
     const blogToDelete = initialBlogs[0];
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).auth(token, { type: 'bearer' }).expect(204);
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .auth(token, { type: 'bearer' })
+      .expect(204);
 
     const resultBlogs = await testHelpers.blogsInDb();
 
     expect(resultBlogs).toHaveLength(initialBlogs.length - 1);
 
-    const ids = resultBlogs.map((r) => r.id);
+    const ids = resultBlogs.map(r => r.id);
 
     expect(ids).not.toContain(blogToDelete.id);
   });
@@ -133,7 +148,10 @@ describe('deletion of blog post', () => {
   it('throws 400 if blog with given id doesnt exist', async () => {
     const initialBlogs = await testHelpers.blogsInDb();
 
-    await api.delete('/api/blogs/123456').auth(token, { type: 'bearer' }).expect(400);
+    await api
+      .delete('/api/blogs/123456')
+      .auth(token, { type: 'bearer' })
+      .expect(400);
 
     const resultBlogs = await testHelpers.blogsInDb();
 
@@ -144,7 +162,10 @@ describe('deletion of blog post', () => {
     const initialBlogs = await testHelpers.blogsInDb();
     const blogToDelete = initialBlogs[1];
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).auth(token, { type: 'bearer' }).expect(401);
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .auth(token, { type: 'bearer' })
+      .expect(401);
 
     const resultBlogs = await testHelpers.blogsInDb();
 

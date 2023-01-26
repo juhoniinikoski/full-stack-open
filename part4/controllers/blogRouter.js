@@ -38,8 +38,8 @@ blogRouter.post('/', async (req, res) => {
 });
 
 blogRouter.put('/:id', async (req, res) => {
-  const { likes } = req.body;
-  await Blog.findByIdAndUpdate(req.params.id, { likes });
+  const { blog } = req.body;
+  await Blog.findByIdAndUpdate(req.params.id, { likes: blog.likes });
   res.status(200).end();
 });
 
