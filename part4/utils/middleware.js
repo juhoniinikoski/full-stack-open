@@ -46,7 +46,9 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).json({ error: error.message });
   }
   if (error.name === 'MongoServerError') {
-    return response.status(400).json({ error: 'trying to add duplicate item to database' });
+    return response
+      .status(400)
+      .json({ error: 'trying to add duplicate item to database' });
   }
   if (error.name === 'JsonWebTokenError') {
     return response.status(401).json({

@@ -73,18 +73,20 @@ const users = [
   {
     username: 'hellas',
     name: 'Arto Hellas',
-    passwordHash: '$2b$10$ARKTKsu66hjd7m5LOfkPveYZSRlrJPgzuc0DTYA32CXvnSVyW5BPG',
+    passwordHash:
+      '$2b$10$ARKTKsu66hjd7m5LOfkPveYZSRlrJPgzuc0DTYA32CXvnSVyW5BPG',
     _id: new mongodb.ObjectId('63c9019f756a847e6f414e60'),
   },
   {
     username: 'mluukkai',
     name: 'Matti Luukkainen',
-    passwordHash: '$2b$10$ARKTKsu66hjd7m5LOfkPveYZSRlrJPgzuc0DTYA32CXvnSVyW5BPG',
+    passwordHash:
+      '$2b$10$ARKTKsu66hjd7m5LOfkPveYZSRlrJPgzuc0DTYA32CXvnSVyW5BPG',
     _id: new mongodb.ObjectId('63c9019f756a847e6f414e61'),
   },
 ];
 
-const getToken = async (api) => {
+const getToken = async api => {
   const loginData = {
     username: 'hellas',
     password: 'password',

@@ -7,8 +7,13 @@ const Person = require('./models/person');
 const app = express();
 
 // eslint-disable-next-line
-morgan.token('type', function (req, res) { if (req.method === 'POST' || req.method === 'PUT') return JSON.stringify(req.body) })
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :type'));
+morgan.token('type', function (req, res) {
+  if (req.method === 'POST' || req.method === 'PUT')
+    return JSON.stringify(req.body);
+});
+app.use(
+  morgan(':method :url :status :res[content-length] - :response-time ms :type'),
+);
 
 app.use(express.json());
 app.use(cors());
@@ -42,12 +47,12 @@ app.get('/', (_req, res) => {
 });
 
 app.get('/api/persons', (_req, res) => {
-  Person.find({}).then((persons) => res.json(persons));
+  Person.find({}).then(persons => res.json(persons));
 });
 
 app.get('/api/seed', (_req, res) => {
   Person.deleteMany({}).then(() =>
-    persons.forEach((p) => {
+    persons.forEach(p => {
       const newPerson = new Person({
         number: p.number,
         name: p.name,
@@ -62,8 +67,8 @@ app.get('/api/seed', (_req, res) => {
 
 app.get('/api/persons/:id', (req, res, next) => {
   Person.findById(req.params.id)
-    .then((person) => res.json(person))
-    .catch((e) => next(e));
+    .then(person => res.json(person))
+    .catch(e => next(e));
 });
 
 app.post('/api/persons', (req, res, next) => {
@@ -77,7 +82,7 @@ app.post('/api/persons', (req, res, next) => {
   newPerson
     .save()
     .then(() => res.status(201).end())
-    .catch((e) => next(e));
+    .catch(e => next(e));
 });
 
 app.put('/api/persons/:id', (req, res, next) => {
@@ -85,7 +90,7 @@ app.put('/api/persons/:id', (req, res, next) => {
 
   Person.findByIdAndUpdate(req.params.id, { name: name, number: number })
     .then(() => res.status(200).end())
-    .catch((e) => next(e));
+    .catch(e => next(e));
 });
 
 app.delete('/api/persons/:id', (req, res, next) => {
@@ -93,12 +98,12 @@ app.delete('/api/persons/:id', (req, res, next) => {
     .then(() => {
       res.status(204).end();
     })
-    .catch((e) => next(e));
+    .catch(e => next(e));
 });
 
 app.get('/info', (_req, res) => {
   const date = new Date();
-  Person.find({}).then((persons) => {
+  Person.find({}).then(persons => {
     res.send(`
       <div>
         <p>Phonebook has info for ${persons.length} people<p>
