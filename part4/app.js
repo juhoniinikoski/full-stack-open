@@ -35,13 +35,15 @@ app.use('/api/blogs', middleware.userExtractor, blogRouter);
 app.use('/api/users', userRouter);
 app.use('/api/login', loginRouter);
 
-// for testing purposes
-app.get('/api/reset', async (_req, res) => {
-  await Blog.deleteMany({});
-  await User.deleteMany({});
+if (process.env.NODE_ENV === 'test') {
+  // for testing purposes
+  app.post('/api/testing/reset', async (_req, res) => {
+    await Blog.deleteMany({});
+    await User.deleteMany({});
 
-  res.json('Initialized DB');
-});
+    res.json('Initialized DB');
+  });
+}
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
