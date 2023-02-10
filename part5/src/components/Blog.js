@@ -13,10 +13,15 @@ const Blog = ({ blog, user, handleLike, handleRemove }) => {
         padding: 16,
         marginTop: 16,
       }}
+      className="blog"
     >
       <div>
         {blog.title} by {blog.author}
-        <button style={{ marginLeft: 8 }} onClick={() => setOpen(!open)}>
+        <button
+          className="show-button"
+          style={{ marginLeft: 8 }}
+          onClick={() => setOpen(!open)}
+        >
           {open ? 'hide' : 'show'}
         </button>
       </div>
