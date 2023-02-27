@@ -1,24 +1,21 @@
-import { initialState as reducedInitial } from './anecdoteReducer';
 import filterReducer from './filterReducer';
 import deepFreeze from 'deep-freeze';
 
 describe('filter reducer', () => {
-  const initialState = reducedInitial;
-
   test('sets filter correctly', () => {
     const action = {
-      type: 'SET_FILTER',
+      type: 'filter/filterChange',
       payload: 'firs',
     };
 
-    const state = initialState;
+    const state = '';
     deepFreeze(state);
     const newState = filterReducer(state, action);
 
     expect(newState).toEqual('firs');
 
     const action2 = {
-      type: 'SET_FILTER',
+      type: 'filter/filterChange',
       payload: '',
     };
 

@@ -19,7 +19,7 @@ describe('anecdote reducer', () => {
 
   test('should return a proper initial state when called with undefined state', () => {
     const action = {
-      type: 'DO_NOTHING',
+      type: '',
     };
 
     const newState = anecdoteReducer(undefined, action);
@@ -28,9 +28,10 @@ describe('anecdote reducer', () => {
 
   test('votes an anecdote succesfully', () => {
     const action = {
-      type: 'VOTE',
+      type: 'anecdotes/voteAnecdote',
       payload: { id: initialState[0].id },
     };
+
     const state = initialState;
 
     deepFreeze(state);
@@ -44,9 +45,10 @@ describe('anecdote reducer', () => {
 
   test('adds a new anecdote', () => {
     const action = {
-      type: 'ADD',
+      type: 'anecdotes/createAnecdote',
       payload: { content: 'test anecdote' },
     };
+
     const state = initialState;
 
     deepFreeze(state);
@@ -57,12 +59,12 @@ describe('anecdote reducer', () => {
 
   test('keeps anecdotes in order from most likes to least likes', () => {
     const action = {
-      type: 'VOTE',
+      type: 'anecdotes/voteAnecdote',
       payload: { id: initialState[1].id },
     };
 
     const action2 = {
-      type: 'VOTE',
+      type: 'anecdotes/voteAnecdote',
       payload: { id: initialState[2].id },
     };
 
