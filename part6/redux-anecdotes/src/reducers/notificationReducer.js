@@ -16,11 +16,10 @@ const notificationSlice = createSlice({
   },
 });
 
-export const createTimedNotification = (payload) => {
-  // called inside dispatch
+export const createTimedNotification = (payload, timeout) => {
   return async (dispatch) => {
     dispatch(createNotification(payload));
-    setTimeout(() => dispatch(clearNotification()), 5000);
+    setTimeout(() => dispatch(clearNotification()), timeout * 1000);
   };
 };
 
