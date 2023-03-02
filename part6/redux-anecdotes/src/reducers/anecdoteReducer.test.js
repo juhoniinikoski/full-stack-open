@@ -1,6 +1,4 @@
-import anecdoteReducer, {
-  initialState as reducedInitial,
-} from './anecdoteReducer';
+import anecdoteReducer from './anecdoteReducer';
 import deepFreeze from 'deep-freeze';
 
 const anecdotesAtStart = [
@@ -14,8 +12,16 @@ const anecdotesAtStart = [
 
 const getId = () => (100000 * Math.random()).toFixed(0);
 
+const asObject = (anecdote) => {
+  return {
+    content: anecdote,
+    id: getId(),
+    votes: 0,
+  };
+};
+
 describe('anecdote reducer', () => {
-  const initialState = reducedInitial;
+  const initialState = anecdotesAtStart.map(asObject);
 
   test('should return a proper initial state when called with undefined state', () => {
     const action = {
@@ -23,7 +29,7 @@ describe('anecdote reducer', () => {
     };
 
     const newState = anecdoteReducer(undefined, action);
-    expect(newState).toEqual(initialState);
+    expect(newState).toEqual([]);
   });
 
   test('votes an anecdote succesfully', () => {
@@ -46,7 +52,7 @@ describe('anecdote reducer', () => {
   test('adds a new anecdote', () => {
     const action = {
       type: 'anecdotes/createAnecdote',
-      payload: { content: 'test anecdote' },
+      payload: { content: 'test anecdote', id: 'test-id', votes: 0 },
     };
 
     const state = initialState;
