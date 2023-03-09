@@ -1,15 +1,18 @@
+import { useContext } from 'react';
 import AnecdoteForm from './components/AnecdoteForm';
 import Notification from './components/Notification';
 import { useQuery, useQueryClient, useMutation } from 'react-query';
 import { getAnecdotes, voteAnecdote } from './requests';
+import NotificationContext from './NotificationContext';
 
 const App = () => {
+  const [message, dispatch] = useContext(NotificationContext);
+
   const queryClient = useQueryClient();
 
   const voteAnecdoteMutation = useMutation(voteAnecdote, {
     onSuccess: (anecdote) => {
       const anecdotes = queryClient.getQueryData('anecdotes');
-      console.log(anecdote);
       queryClient.setQueryData(
         'anecdotes',
         anecdotes.map((a) => {
@@ -18,6 +21,13 @@ const App = () => {
           } else return a;
         }),
       );
+      dispatch({
+        type: 'CREATE',
+        payload: `anecdote '${anecdote.content}' voted`,
+      });
+      setTimeout(() => {
+        dispatch({ type: 'ZERO' });
+      }, 5000);
     },
   });
 
@@ -35,7 +45,7 @@ const App = () => {
     <div>
       <h3>Anecdote app</h3>
 
-      <Notification />
+      <Notification message={message} />
       <AnecdoteForm />
       {isLoading && <p>loading...</p>}
       {error && <p>anecdote service not available due to problems in server</p>}
